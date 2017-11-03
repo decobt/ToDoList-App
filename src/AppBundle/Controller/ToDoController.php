@@ -10,32 +10,49 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class ToDoController extends Controller
 {
     /**
     * @Route("/", name="homepage")
-    * @Method("GET")
     */
-    public function toDoAction(){
+    public function toDoAction(Request $request){
         
-        // create a task and give it some dummy data for this example
+        // create a task and give it some dummy data
         $task = new ToDoItem();
-        $task->setDescription('Write a blog post');
         $task->setDate(new \DateTime('tomorrow'));
         
+        // create the form
         $form = $this->createFormBuilder($task)
         ->add('description', TextareaType::class)
         ->add('date', DateType::class, array('widget' => 'single_text'))
         ->add('save', SubmitType::class, array('label' => 'Create Task'))
         ->getForm();
         
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //saving the item to the database
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($task);
+            $em->flush();
+            
+            //render the view
+            return $this->render('base.html.twig', array(
+                'title'=>'HomePage',
+                'message'=>'ToDo List App',
+                'alert'=>'Success',
+                'form'=>$form->createView()
+            ));
+        }
+        //render the view
         return $this->render('base.html.twig', array(
             'title'=>'HomePage',
-            'message'=>'Welcome to HomePage',
+            'message'=>'ToDo List App',
             'form'=>$form->createView()
         ));
     }
+    
     /**
     * @Route("/edit/{post}")
     */

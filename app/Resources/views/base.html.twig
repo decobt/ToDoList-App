@@ -9,39 +9,50 @@
         
         {% block stylesheets %}{% endblock %}
         <style>
-            body{background:#e74c3c}
+            body{background:#3498db}
         </style>
     </head>
     <body>
         <div class="container">
+            <div class="col-sm-10 col-sm-push-1 col-md-8 col-md-push-2">
             
         {% block body %}
             <h2>{{ message}}</h2>
-        
-        {{form_start(form)}}
-        {{ form_errors(form) }}
-
-        <div class="form-group">
-        {{ form_label(form.description) }}
-        {{ form_errors(form.description) }}
-        {{ form_widget(form.description, { 'attr': {'class': 'form-control'} }) }}
-        </div>
-        
-        <div class="form-group">
-        {{ form_label(form.date) }}
-        {{ form_errors(form.date) }}
-        {{ form_widget(form.date, { 'attr': {'class': 'form-control'} }) }}
-        </div>
-        
-        <div class="form-group">
-        {{ form_widget(form.save, { 'attr': {'class': 'btn btn-default btn-lg'} }) }}
-        </div>
-        {{form_end(form)}}
-        
         {% endblock %}
+                
+        {% if alert is defined %}
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ alert }}
+        </div>   
+        {% endif %}
+            
+            {{form_start(form)}}
+            {{ form_errors(form) }}
+
+            <div class="form-group">
+            {{ form_label(form.description) }}
+            {{ form_errors(form.description) }}
+            {{ form_widget(form.description, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+
+            <div class="form-group">
+            {{ form_label(form.date) }}
+            {{ form_errors(form.date) }}
+            {{ form_widget(form.date, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+
+            <div class="form-group">
+            {{ form_widget(form.save, { 'attr': {'class': 'btn btn-default btn-lg'} }) }}
+            </div>
+            {{form_end(form)}}   
+        
+            </div>
         </div>
         
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
         {% block javascripts %}{% endblock %}
         
     </body>
