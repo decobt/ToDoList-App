@@ -30,6 +30,9 @@ class ToDoController extends Controller
         ->add('save', SubmitType::class, array('label' => 'Create Task'))
         ->getForm();
         
+        $repository = $this->getDoctrine()->getRepository('AppBundle:ToDoItem');
+        $alltasks = $repository->findAll();
+        
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             //saving the item to the database
@@ -42,14 +45,16 @@ class ToDoController extends Controller
                 'title'=>'HomePage',
                 'message'=>'ToDo List App',
                 'alert'=>'Success',
-                'form'=>$form->createView()
+                'form'=>$form->createView(),
+                'tasks'=>$alltasks
             ));
         }
         //render the view
         return $this->render('base.html.twig', array(
             'title'=>'HomePage',
             'message'=>'ToDo List App',
-            'form'=>$form->createView()
+            'form'=>$form->createView(),
+            'tasks'=>$alltasks
         ));
     }
     
@@ -58,6 +63,22 @@ class ToDoController extends Controller
     */
     public function editPost($post){
         return new Response("edit post page");
+    }
+    
+    /**
+    * @Route("/remove/{post}")
+    */
+    public function removePost($post){
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository('AppBundle:ToDoItem')->find($post);
+        
+        if(!$product){
+            return new Response("Such Task Does Not Exist");
+        }
+        $em->remove($product);
+        $em->flush();
+        
+        return $this->redirectToRoute('homepage');
     }
 }
 
