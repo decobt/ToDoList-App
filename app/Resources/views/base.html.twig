@@ -3,16 +3,46 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}{{title}}{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+    
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        
+        {% block stylesheets %}{% endblock %}
         <style>
             body{background:#e74c3c}
         </style>
     </head>
     <body>
+        <div class="container">
+            
         {% block body %}
             <h2>{{ message}}</h2>
+        
+        {{form_start(form)}}
+        {{ form_errors(form) }}
+
+        <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_errors(form.description) }}
+        {{ form_widget(form.description, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        
+        <div class="form-group">
+        {{ form_label(form.date) }}
+        {{ form_errors(form.date) }}
+        {{ form_widget(form.date, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+        
+        <div class="form-group">
+        {{ form_widget(form.save, { 'attr': {'class': 'btn btn-default btn-lg'} }) }}
+        </div>
+        {{form_end(form)}}
+        
         {% endblock %}
+        </div>
+        
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         {% block javascripts %}{% endblock %}
+        
     </body>
 </html>
