@@ -40,11 +40,16 @@ class ToDoController extends Controller
             $em->persist($task);
             $em->flush();
             
+            //Add flash message to session
+            $this->addFlash(
+                'success',
+                'Your task was saved!'
+            );
+            
             //render the view
             return $this->render('base.html.twig', array(
                 'title'=>'HomePage',
                 'message'=>'ToDo List App',
-                'alert'=>'Success',
                 'form'=>$form->createView(),
                 'tasks'=>$alltasks
             ));
@@ -62,7 +67,20 @@ class ToDoController extends Controller
     * @Route("/edit/{post}")
     */
     public function editPost($post){
-        return new Response("edit post page");
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository('AppBundle:ToDoItem')->find($post);
+        
+        $form = $this->createFormBuilder($product)
+        ->add('description', TextareaType::class)
+        ->add('date', DateType::class, array('widget' => 'single_text'))
+        ->add('save', SubmitType::class, array('label' => 'Update Task'))
+        ->getForm();
+        
+        return $this->render('edit.html.twig', array(
+            'title'=>'Edit Task',
+            'message'=>'ToDo List App',
+            'form'=>$form->createView()
+        ));
     }
     
     /**
@@ -73,10 +91,19 @@ class ToDoController extends Controller
         $product = $em->getRepository('AppBundle:ToDoItem')->find($post);
         
         if(!$product){
-            return new Response("Such Task Does Not Exist");
+            $this->addFlash(
+                'warning',
+                'This task does not exist and can\'t be removed!'
+            );
+            return $this->redirectToRoute('homepage');
         }
         $em->remove($product);
         $em->flush();
+        
+        $this->addFlash(
+                'success',
+                'Your task was succesfully removed!'
+            );
         
         return $this->redirectToRoute('homepage');
     }

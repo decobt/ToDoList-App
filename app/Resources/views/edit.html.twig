@@ -32,7 +32,7 @@
             {% endfor %}
         {% endfor %}
             
-            <h3>Add New Task</h3>
+            <h3>Update Task</h3>
             {{form_start(form)}}
             {{ form_errors(form) }}
 
@@ -52,24 +52,7 @@
             {{ form_widget(form.save, { 'attr': {'class': 'btn btn-success btn-lg'} }) }}
             </div>
             {{form_end(form)}}   
-        
-            {% if tasks is defined %} 
-            <h3>Upcoming Tasks</h3>
-            <ul class="list-group">    
-            {% for task in tasks %}
-                <li class="list-group-item clearfix">
-                    <div class="task pull-left">
-                    <p><strong>{{ task.description}}</strong></p>
-                    <p>{{ task.date|date("m/d/Y", false)}}</p>
-                    </div>
-                    <div class="btn-group btn-group-xs pull-right" role="group" aria-label="...">
-                      <a href="edit/{{task.id}}" class="btn btn-primary"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                      <a href="remove/{{task.id}}" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                    </div>
-                </li>
-            {% endfor %}
-            </ul>
-            {% endif %}
+
                 
             </div>
         </div>
