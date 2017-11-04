@@ -31,7 +31,7 @@ class ToDoController extends Controller
         ->getForm();
         
         $repository = $this->getDoctrine()->getRepository('AppBundle:ToDoItem');
-        $alltasks = $repository->findAll();
+        $alltasks = $repository->findBy([], ['date' => 'ASC']);
         
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -66,7 +66,7 @@ class ToDoController extends Controller
     /**
     * @Route("/edit/{post}")
     */
-    public function editPost($post){
+    public function editPost(Request $request, $post){
         $em = $this->getDoctrine()->getManager();
         $product = $em->getRepository('AppBundle:ToDoItem')->find($post);
         
@@ -75,6 +75,22 @@ class ToDoController extends Controller
         ->add('date', DateType::class, array('widget' => 'single_text'))
         ->add('save', SubmitType::class, array('label' => 'Update Task'))
         ->getForm();
+        
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //saving the item to the database
+            $em = $this->getDoctrine()->getManager();
+            $task = $form->getData();
+            $em->persist($task);
+            $em->flush();
+            
+            //Add flash message to session
+            $this->addFlash(
+                'success',
+                'Task was succesfully updated'
+            );
+            return $this->redirectToRoute('homepage');
+        }
         
         return $this->render('edit.html.twig', array(
             'title'=>'Edit Task',
