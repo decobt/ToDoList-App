@@ -1,4 +1,3 @@
-TODO List App
-========
+# TODO List App with comments
 
-A Symfony project created on November 3, 2017, a simple to do App.
+A Symfony project created as a simple to do App with commenting options.
