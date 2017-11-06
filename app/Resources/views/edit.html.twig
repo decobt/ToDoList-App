@@ -55,21 +55,20 @@
 
                 <hr/>
                 <h3>Comments</h3>
-                {% if comments is defined %} 
-            <h3>Upcoming Tasks</h3>
-            <ul class="list-group">    
-            {% for item in comments %}
-                <li class="list-group-item clearfix">
-                    <div class="task pull-left">
-                    <p><strong>{{ item.comment}}</strong></p>
-                    </div>
-                    <a href="remove_comment/{{item.id}}" class="btn btn-danger pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                </li>
-            {% endfor %}
-            </ul>
-            {% else %}
-                <p>No Comments Added</p>
-            {% endif %}
+                {% if comments is not empty %} 
+                <ul class="list-group">    
+                {% for item in comments %}
+                    <li class="list-group-item clearfix">
+                        <div class="task pull-left">
+                        <p><strong>{{ item.comment }}</strong></p>
+                        </div>
+                        <a href="{{ path('removeComment', {'post': item.todoId.id,'comment': item.id}) }}" class="btn btn-danger pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                    </li>
+                {% endfor %}
+                </ul>
+                {% else %}
+                    <p>No Comments Added</p>
+                {% endif %}
                 <hr/>    
                 
             <h3>Add New Comment</h3>
@@ -90,6 +89,12 @@
             {{ form_widget(comment_form.save, { 'attr': {'class': 'btn btn-info'} }) }}
             </div>
             {{form_end(comment_form)}}   
+                
+            <hr/>
+            <div style="margin-bottom:20px">
+            <a href="{{ path('homepage') }}" class="btn btn-default btn-lg">Go Back Home</a>
+            </div>
+                
             </div>
         </div>
         

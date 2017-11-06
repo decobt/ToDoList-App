@@ -49,12 +49,7 @@ class ToDoController extends Controller
             );
             
             //render the view
-            return $this->render('base.html.twig', array(
-                'title'=>'HomePage',
-                'message'=>'ToDo List App',
-                'form'=>$form->createView(),
-                'tasks'=>$alltasks
-            ));
+            return $this->redirectToRoute('homepage');
         }
         //render the view
         return $this->render('base.html.twig', array(
@@ -104,11 +99,15 @@ class ToDoController extends Controller
             return $this->redirectToRoute('homepage');
         }
         
+        $repository = $this->getDoctrine()->getRepository('AppBundle:Comments');
+        $getComments = $repository->findBy(array('todo_id'=>$post));
+        
         return $this->render('edit.html.twig', array(
             'title'=>'Edit Task',
             'message'=>'ToDo List App',
             'form'=>$form->createView(),
-            'comment_form'=>$comment_form->createView()
+            'comment_form'=>$comment_form->createView(),
+            'comments'=>$getComments
         ));
     }
     
@@ -126,6 +125,14 @@ class ToDoController extends Controller
             );
             return $this->redirectToRoute('homepage');
         }
+        
+        $comments = $em->getRepository('AppBundle:Comments')->findBy(array('todo_id'=>$post));
+        if($comments){
+            foreach ($comments as $op) {
+                $em->remove($op);
+            }
+            
+        }
         $em->remove($product);
         $em->flush();
         
@@ -139,9 +146,53 @@ class ToDoController extends Controller
     
     /**
     * @Route("/add_comment")
+    * @Method("POST")
     */
     public function addCommentAction(Request $request){
-        return $this->redirectToRoute('homepage');
+        $data = $request->request->all();
+        $form = $data['form'];
+        
+        $em = $this->getDoctrine()->getManager();
+        $comment = new Comments();
+        
+        $comment -> setComment($form['comment']);
+        $comment -> setTodoId($em->getRepository('AppBundle:ToDoItem')->find($form['todo_id']));
+        
+        $em -> persist($comment);
+        $em ->flush();
+        
+        $this->addFlash(
+                'success',
+                'Your comment was succesfully added!'
+            );
+        
+        return $this->redirectToRoute('app_todo_editpost', array('post' => $form['todo_id']));
+    }
+    
+    /**
+    * @Route("/remove/{post}/{comment}",name="removeComment")
+    * @Method("GET")
+    */
+    public function removeCommentAction($post, $comment){
+        $em = $this->getDoctrine()->getManager();
+        $item = $em->getRepository('AppBundle:Comments')->find($comment);
+        
+        if(!$item){
+            $this->addFlash(
+                'warning',
+                'This comment does not exist and can\'t be removed!'
+            );
+            return $this->redirectToRoute('app_todo_editpost',array('post' => $post));
+        }
+        $em->remove($item);
+        $em->flush();
+        
+        $this->addFlash(
+                'success',
+                'Your comment was succesfully removed!'
+            );
+        
+        return $this->redirectToRoute('app_todo_editpost',array('post' => $post));
     }
 }
 
