@@ -21,20 +21,22 @@ class ToDoController extends Controller
     */
     public function toDoAction(Request $request){
         
-        // create a task and give it some dummy data
+        // create a task and give it some data
         $task = new ToDoItem();
         $task->setDate(new \DateTime('tomorrow'));
         
-        // create the form
+        // build the form to add new tasks
         $form = $this->createFormBuilder($task)
         ->add('description', TextareaType::class)
         ->add('date', DateType::class, array('widget' => 'single_text'))
         ->add('save', SubmitType::class, array('label' => 'Create Task'))
         ->getForm();
         
+        // get all tasks sorted by ASC from the DB
         $repository = $this->getDoctrine()->getRepository('AppBundle:ToDoItem');
         $alltasks = $repository->findBy([], ['date' => 'ASC']);
         
+        // handle the request and check if the form is submitted
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             //saving the item to the database
@@ -48,11 +50,12 @@ class ToDoController extends Controller
                 'Your task was saved!'
             );
             
-            //render the view
+            //redirect to homepage
             return $this->redirectToRoute('homepage');
         }
+        
         //render the view
-        return $this->render('base.html.twig', array(
+        return $this->render('home.html.twig', array(
             'title'=>'HomePage',
             'message'=>'ToDo List App',
             'form'=>$form->createView(),
@@ -63,19 +66,22 @@ class ToDoController extends Controller
     /**
     * @Route("/edit/{post}")
     */
-    public function editPost(Request $request, $post){
+    public function editPostAction(Request $request, $post){
+        // find the task based on post number (id)
         $em = $this->getDoctrine()->getManager();
         $product = $em->getRepository('AppBundle:ToDoItem')->find($post);
          
+        // build the update form based on the data from the DB    
         $form = $this->createFormBuilder($product)
         ->add('description', TextareaType::class)
         ->add('date', DateType::class, array('widget' => 'single_text'))
         ->add('save', SubmitType::class, array('label' => 'Update Task'))
         ->getForm();
         
+        //create comment object
         $comment = new Comments();
         
-        // create the comment form
+        // build the comment form
         $comment_form = $this->createFormBuilder($comment)
         ->setAction('/add_comment')
         ->add('comment', TextareaType::class)
@@ -83,25 +89,31 @@ class ToDoController extends Controller
         ->add('save', SubmitType::class, array('label' => 'Add Comment'))
         ->getForm();
         
+        // handle the form submission and update the task in the DB
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            //saving the item to the database
+            
+            // update the task in the database
             $em = $this->getDoctrine()->getManager();
             $task = $form->getData();
             $em->persist($task);
             $em->flush();
             
-            //Add flash message to session
+            // add flash message to session
             $this->addFlash(
                 'success',
                 'Task was succesfully updated'
             );
+            
+            // redirect to homepage
             return $this->redirectToRoute('homepage');
         }
         
+        // find all comments for the task, later pass it to the view
         $repository = $this->getDoctrine()->getRepository('AppBundle:Comments');
         $getComments = $repository->findBy(array('todo_id'=>$post));
         
+        // render the view
         return $this->render('edit.html.twig', array(
             'title'=>'Edit Task',
             'message'=>'ToDo List App',
@@ -114,33 +126,45 @@ class ToDoController extends Controller
     /**
     * @Route("/remove/{post}")
     */
-    public function removePost($post){
+    public function removePostAction($post){
+        
+        // get the task from the DB based on $post
         $em = $this->getDoctrine()->getManager();
         $product = $em->getRepository('AppBundle:ToDoItem')->find($post);
         
+        // if the task does not exist in DB
         if(!$product){
+            // add message to session
             $this->addFlash(
                 'warning',
                 'This task does not exist and can\'t be removed!'
             );
+            
+            // redirect to homepage
             return $this->redirectToRoute('homepage');
         }
         
+        // if tasks exist, check if any comments are assosiated with it
         $comments = $em->getRepository('AppBundle:Comments')->findBy(array('todo_id'=>$post));
+        
+        // if comments exist, remove them first
         if($comments){
             foreach ($comments as $op) {
                 $em->remove($op);
-            }
-            
+            } 
         }
+        
+        // finally remove the task
         $em->remove($product);
         $em->flush();
         
+        // add a message to the session
         $this->addFlash(
                 'success',
                 'Your task was succesfully removed!'
             );
         
+        // redirect to homepage
         return $this->redirectToRoute('homepage');
     }
     
@@ -149,49 +173,62 @@ class ToDoController extends Controller
     * @Method("POST")
     */
     public function addCommentAction(Request $request){
+        // get the form data
         $data = $request->request->all();
         $form = $data['form'];
         
         $em = $this->getDoctrine()->getManager();
-        $comment = new Comments();
         
+        // create a new Comments Object
+        $comment = new Comments();
         $comment -> setComment($form['comment']);
         $comment -> setTodoId($em->getRepository('AppBundle:ToDoItem')->find($form['todo_id']));
         
+        // add the data to the DB
         $em -> persist($comment);
         $em ->flush();
         
+        // add a message to the session
         $this->addFlash(
                 'success',
                 'Your comment was succesfully added!'
             );
         
+        // redirect to route
         return $this->redirectToRoute('app_todo_editpost', array('post' => $form['todo_id']));
     }
     
     /**
-    * @Route("/remove/{post}/{comment}",name="removeComment")
+    * @Route("/remove/{post}/{comment}", name="removeComment")
     * @Method("GET")
     */
     public function removeCommentAction($post, $comment){
         $em = $this->getDoctrine()->getManager();
+        
+        // search for comment in DB based on id
         $item = $em->getRepository('AppBundle:Comments')->find($comment);
         
+        // if it does not exist, add a message to session
         if(!$item){
             $this->addFlash(
                 'warning',
                 'This comment does not exist and can\'t be removed!'
             );
+            // redirect to route
             return $this->redirectToRoute('app_todo_editpost',array('post' => $post));
         }
+        
+        // if it exists, remove it from DB
         $em->remove($item);
         $em->flush();
         
+        // add a flash message to session
         $this->addFlash(
                 'success',
                 'Your comment was succesfully removed!'
             );
         
+        // redirect to route
         return $this->redirectToRoute('app_todo_editpost',array('post' => $post));
     }
 }

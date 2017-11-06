@@ -17,63 +17,21 @@
         <div class="container">
             <div class="col-sm-10 col-sm-push-1 col-md-8 col-md-push-2">
             
-        {% block body %}
             <div class="page-header">
               <h1>{{ message }} <small>welcome user!</small></h1>
             </div>
-        {% endblock %}
-        
-        {% for label, alerts in app.flashes %}
-            {% for alert in alerts %}
-            <div class="alert alert-{{label}} alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                {{ alert }}
-            </div> 
-            {% endfor %}
-        {% endfor %}
-            
-            <h3>Add New Task</h3>
-            {{form_start(form)}}
-            {{ form_errors(form) }}
-
-            <div class="form-group">
-            {{ form_label(form.description) }}
-            {{ form_errors(form.description) }}
-            {{ form_widget(form.description, { 'attr': {'class': 'form-control'} }) }}
-            </div>
-
-            <div class="form-group">
-            {{ form_label(form.date) }}
-            {{ form_errors(form.date) }}
-            {{ form_widget(form.date, { 'attr': {'class': 'form-control'} }) }}
-            </div>
-
-            <div class="form-group">
-            {{ form_widget(form.save, { 'attr': {'class': 'btn btn-success btn-lg'} }) }}
-            </div>
-            {{form_end(form)}}   
                 
-            <h3>Upcoming Tasks</h3>    
-        
-            {% if tasks is not empty %} 
-            <ul class="list-group">    
-            {% for task in tasks %}
-                <li class="list-group-item clearfix">
-                    <div class="task pull-left">
-                    <p><strong>{{ task.description}}</strong></p>
-                    <p>{{ task.date|date("m/d/Y", false)}}</p>
-                    </div>
-                    <div class="btn-group btn-group-xs pull-right" role="group" aria-label="...">
-                      <a href="edit/{{task.id}}" class="btn btn-primary"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
-                      <a href="remove/{{task.id}}" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                    </div>
-                </li>
+            {% for label, alerts in app.flashes %}
+                {% for alert in alerts %}
+                <div class="alert alert-{{label}} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    {{ alert }}
+                </div> 
+                {% endfor %}
             {% endfor %}
-            </ul>
-            {% else %}
-                <p>No ToDo Tasks have been added.</p>
-            {% endif %}    
                 
+            {% block body %}
+            {% endblock %}   
             </div>
         </div>
         
