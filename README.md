@@ -5,15 +5,19 @@ A Symfony project created as a simple to do App with commenting options.
 ## Installation
 
 1. Clone the git repository
-2. Autogenerate the database by running 
+2. Run
+```
+composer install
+```
+3. Autogenerate the database by running
 ```
 $php bin/console doctrine:database:create
 ```
-3. Create the database tables by running
+4. Create the database tables by running
 ```
 $php bin/console doctrine:schema:update --force
 ```
-4. Start the application by running
+5. Start the application by running
 ```
 $php bin/console server:run
 ```
