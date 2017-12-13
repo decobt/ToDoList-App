@@ -12,23 +12,28 @@ use Doctrine\ORM\Mapping as ORM;
 */
 
 class ToDoItem{
-    
+
     /**
     * @ORM\Column (type="integer")
     * @ORM\Id
     * @ORM\GeneratedValue (strategy="AUTO")
     */
     private $id;
-    
+
+    /**
+    * @ORM\Column (type="text")
+    */
+    private $title;
+
     /**
     * @ORM\Column (type="text")
     */
     private $description;
-        
+
     /**
     * @ORM\Column (type="date")
     */
-    private $date;    
+    private $date;
 
     /**
      * Get id
@@ -86,5 +91,29 @@ class ToDoItem{
     public function getDate()
     {
         return $this->date;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     *
+     * @return ToDoItem
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 }
