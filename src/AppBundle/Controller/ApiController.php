@@ -45,7 +45,10 @@ class ApiController extends Controller
     public function addToDo(Request $request)
     {
         // replace this example code with whatever you need
-        return new Response('addToDo');
+        $response = new JsonResponse(['data','trajce']);
+        $response->headers->set('Access-Control-Allow-Origin', 'http://localhost:3000');
+        $response->headers->set('Content-Type', 'application/javascript');
+        return $response;
     }
 
     /**
