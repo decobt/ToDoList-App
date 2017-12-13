@@ -3,42 +3,148 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}{{title}}{% endblock %}</title>
-    
+
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        
+
         {% block stylesheets %}{% endblock %}
         <style>
-            body{background:#2f2f2f; color:white}
+            body{background:#222;}
             .task{color:#222;}
+            .search-input{
+              border-radius:0;
+              padding:20px;
+              height:80px;
+              font-size:20px;
+              border:none;
+              color:white
+            }
+            .form-control::placeholder{
+              color:white;
+            }
+            @media only screen and (min-width: 768px) and (min-height: 560px) {
+              .loader {
+                position: fixed;
+                z-index: 999;
+                height: 560px;
+                max-width:1170px;
+                overflow:auto;
+                margin: auto;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+              }
+              .todo-items{
+                height:400px;
+                overflow-y:auto
+              }
+              .main-body{
+                height:560px;
+                overflow-y:auto;
+              }
+            }
+            @media only screen and (min-width: 768px) and (max-height: 560px) {
+              .todo-items{
+                height:400px;
+                overflow-y:scroll;
+              }
+              .main-body{
+                height:560px;
+                overflow-y:scroll;
+              }
+            }
         </style>
     </head>
     <body>
         <div class="container">
-            <div class="col-sm-10 col-sm-push-1 col-md-8 col-md-push-2">
-            
-            <div class="page-header">
-              <h1>{{ message }} <small>welcome user!</small></h1>
+          <div class="row loader">
+            <div class="col-sm-5" style="padding:0">
+
+                <input type="text" placeholder="Search..." class="form-control search-input" style="background:#2980b9" />
+
+                <div class="todo-items" style="background:#ccc;" >
+                  {% block todolist %}
+                        {# display all upcoming tasks if available #}
+                        {% if tasks is not empty %}
+                        <ul class="list-group" style="margin-bottom:0">
+                        {% for task in tasks %}
+                            <li class="list-group-item clearfix" style="border-radius:0;">
+                                <div class="task pull-left">
+                                <p><strong>{{ task.title}}</strong></p>
+                                <p>{{ task.date|date("m/d/Y", false)}}</p>
+                                </div>
+                                <div class="btn-group btn-group-xs pull-right" role="group" aria-label="...">
+                                  <a href="{{ path('app_todo_editpost', {'post': task.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                                  <a href="{{ path('app_todo_removepost', {'post': task.id}) }}" class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        {% else %}
+                            <p>No ToDo Tasks have been added.</p>
+                        {% endif %}
+                  {% endblock %}
+                </div>
+
+                <div class="add-mew" style="background:#2980b9; height:80px; padding:16px">
+                  <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#myModal">
+                    <span class="glyphicon glyphicon-{{glyph}}" aria-hidden="true"></span>
+                  </button>
+                </div>
+
             </div>
-                
-            {% for label, alerts in app.flashes %}
-                {% for alert in alerts %}
-                <div class="alert alert-{{label}} alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    {{ alert }}
-                </div> 
+            <div class="col-sm-7 main-body" style="background:white; padding:0; color:#222">
+              <div class="main-body" style="padding:30px">
+                <div class="page-header">
+                  <h3>{{header}}</h3>
+                </div>
+
+                {% for label, alerts in app.flashes %}
+                    {% for alert in alerts %}
+                    <div class="alert alert-{{label}} alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ alert }}
+                    </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-                
-            {% block body %}
-            {% endblock %}   
+
+                {% block body %}
+                  <p>Life can feel overwhelming. But it doesn’t have to.</p>
+
+                  <p>With Todo App, you can keep track of everything – from simple errands like grocery shopping, to your most ambitious projects – so you can start getting things done and enjoy more peace-of-mind along the way. </p>
+
+                  <p>When you don’t have to worry about forgetting to-dos, you’ll feel more calm, in control and motivated to accomplish your goals.</p>
+
+                  <p>Todoist helps get all your tasks and thoughts out of your head and onto your to-do list anytime, anywhere.</p>
+
+                  <p>Created by <a href="https://trajcheroshkoski.com/" target="_blank">Trayche Roshkoski</a>.</p>
+                {% endblock %}
+              </div>
             </div>
         </div>
-        
+      </div>
+
+        <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">{{modaltitle}}</h3>
+              </div>
+              <div class="modal-body">
+                {% block mainform %}
+
+                {% endblock %}
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
         {% block javascripts %}{% endblock %}
-        
+
     </body>
 </html>

@@ -2,8 +2,6 @@
 
 {% extends 'base.html.twig' %}
 
-
-
     {% block mainform %}
         {# update the task form #}
         {{form_start(form)}}
@@ -35,52 +33,52 @@
 
     {% block body %}
 
-                <p>{{post.description}}</p>
+    <p>{{post.description}}</p>
 
-                {# loop and display comments #}
-                <hr/>
-                <h3>Comments</h3>
-                {% if comments is not empty %}
-                <ul class="list-group">
-                {% for item in comments %}
-                    <li class="list-group-item clearfix">
-                        <div class="task pull-left">
-                        <p><strong>{{ item.comment }}</strong></p>
-                        </div>
-                        <a href="{{ path('removeComment', {'post': item.todoId.id,'comment': item.id}) }}" class="btn btn-danger pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                    </li>
-                {% endfor %}
-                </ul>
-                {% else %}
-                    <p>No Comments Added</p>
-                {% endif %}
-                <hr/>
+    {# loop and display comments #}
+        <hr/>
+        <h4>Comments</h4>
+        {% if comments is not empty %}
+        <ul class="list-group">
+            {% for item in comments %}
+                <li class="list-group-item clearfix">
+                  <div class="task pull-left">
+                  <p><strong>{{ item.comment }}</strong></p>
+                  </div>
+                  <a href="{{ path('removeComment', {'post': item.todoId.id,'comment': item.id}) }}" class="btn btn-danger pull-right"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+            <p>No Comments Added</p>
+          {% endif %}
+          <hr/>
 
-            {# Display add comment form #}
-            <h3>Add New Comment</h3>
-            {{form_start(comment_form)}}
-            {{ form_errors(comment_form) }}
+          {# Display add comment form #}
+          <h4>Add New Comment</h4>
+          {{form_start(comment_form)}}
+          {{ form_errors(comment_form) }}
 
-            <div class="form-group">
-            {{ form_label(comment_form.comment) }}
-            {{ form_errors(comment_form.comment) }}
-            {{ form_widget(comment_form.comment, { 'attr': {'class': 'form-control'} }) }}
-            </div>
+          <div class="form-group">
+          {{ form_label(comment_form.comment) }}
+          {{ form_errors(comment_form.comment) }}
+          {{ form_widget(comment_form.comment, { 'attr': {'class': 'form-control'} }) }}
+          </div>
 
-            <div class="form-group">
-            {{ form_widget(comment_form.todo_id) }}
-            </div>
+          <div class="form-group">
+          {{ form_widget(comment_form.todo_id) }}
+          </div>
 
-            <div class="form-group">
-            {{ form_widget(comment_form.save, { 'attr': {'class': 'btn btn-info'} }) }}
-            </div>
-            {{form_end(comment_form)}}
+          <div class="form-group">
+          {{ form_widget(comment_form.save, { 'attr': {'class': 'btn btn-primary'} }) }}
+          </div>
+          {{form_end(comment_form)}}
 
 
-                {# Display the back to homepage button #}
-                <hr/>
-                <div style="margin-bottom:20px">
-                <a href="{{ path('homepage') }}" class="btn btn-default btn-lg">Go Back Home</a>
-                </div>
+          {# Display the back to homepage button #}
+          <hr/>
+          <div style="margin-bottom:20px">
+          <a href="{{ path('homepage') }}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>Back</a>
+          </div>
 
     {% endblock %}
